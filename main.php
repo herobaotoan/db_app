@@ -22,8 +22,16 @@ if (!empty($_POST)) {
 
     break;
     case isset($_POST['B']):
-
-    
+        $Pid = $_POST['id'];
+        $Pname = $_POST['name'];
+        $Price = $_POST['price'];
+        //Check if product is ordered
+        if ($_POST['status'] == 'Available'){
+            $pdo->query("UPDATE products SET Pname = '$Pname', Price = $Price WHERE Pid = $Pid;");
+            echo "<script type='text/javascript'>alert('Product edited successful!');</script>";
+        } else {
+            echo "<script type='text/javascript'>alert('Product cannot be edited at current status');</script>";
+        }
     }
 }
 
@@ -73,36 +81,60 @@ if (!empty($_POST)) {
             </div>   
         </form>
         <hr>
-
-
-        <div class="container-fluid bg-primary text-light p-2">
-            <h1>List of Products</h1>
-        </div>
-        <table class="table table-striped table-info">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
         GFG;
 
         //Display vendor's product
-        
-        $rows = $pdo->query("SELECT * FROM products WHERE Vid = $Uid");
+        echo <<<GFG
+        <div class="container-fluid bg-primary text-light p-2">
+        <h1>List of Products</h1>
+        </div>
+        <table class="table table-striped table-info">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        GFG;
+        //Get product's information
+        $rows = $pdo->query("SELECT * FROM products WHERE Vid = $Uid;");
         foreach ($rows as $row) {
+            //Get product's status
             $id = $row['Pid'];
+            $status = 'Available';
+            $rows2 = $pdo->query("SELECT * FROM orders WHERE Pid = $id;");
+            foreach ($rows2 as $row2) {
+                if ($row2['Pid'] == $id){
+                    $status = $row2['Pstatus'];
+                }
+            }
             $Pname = $row['Pname'];
             $price = $row['Price'];
             echo<<<GFG
                     <tr>
-                        <td>$id</td>
-                        <td>$Pname</td>
-                        <td>$price</td>
-                        <td><button class="btn btn-success">Edit</button></td>
+                    <form method="post" action="main.php">
+                        <td>
+                            $id
+                            <input type="hidden" name="id" value=$id>
+                        </td>
+                        <td>
+                            $Pname
+                            <input type="text" placeholder="Change name" name="name" required>
+                        </td>
+                        <td>
+                            $price
+                            <input type="number" placeholder="Change price" name="price" required>
+                        </td>
+                        <td>
+                            $status
+                            <input type="hidden" name="status" value=$status>
+                        </td>
+                        <td><input type="submit" name="B" class="btn btn-success" value="Edit"></td>
+                    </form>
                     </tr>
             GFG;
         }
