@@ -45,18 +45,28 @@ if (!empty($_POST)) {
     case isset($_POST['B']):
         $password = $_POST['password'];
         $username = strtolower($_POST['username']);
+        $role = '';
+        $name = '';
+        $Uid = 0;
         //Check username and password in database
         $rows = $pdo->query("SELECT * FROM users");
         foreach ($rows as $row) {
             if (($username == $row['Username']) and (password_verify($password, $row['Pwd']))){
                 $invalid = true;
+                //Get user information so on next page we don't have to read table users again
+                $role = $row['URole'];
+                $name = $row['UName'];
+                $Uid = $row['Uid'];
                 break;
             }
         }
         if ($invalid){
             $_SESSION['loggedin'] = true;
-            $_SESSION['id'] = $username;
+            $_SESSION['id'] = $Uid;
+            $_SESSION['username'] = $username;
             $_SESSION['pwd'] = $password;
+            $_SESSION['role'] = $role;
+            $_SESSION['name'] = $name;
             header('location: main.php');
         } else {
             echo "<script type='text/javascript'>alert('Username or Password incorrect');</script>";
