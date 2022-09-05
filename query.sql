@@ -21,3 +21,12 @@ CREATE TABLE products (
     PRIMARY KEY (Pid),
     FOREIGN KEY (Vid) REFERENCES users(Uid)
 ) ENGINE = InnoDB;
+
+CREATE TABLE orders (
+	Pid INT NOT NULL,
+    Cid INT NOT NULL,
+    Pstatus VARCHAR (20),
+    PRIMARY KEY (Pid),
+    FOREIGN KEY (Pid) REFERENCES products(Pid),
+    FOREIGN KEY (Cid) REFERENCES users(Uid)
+)Engine Innodb;
