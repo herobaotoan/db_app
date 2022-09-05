@@ -21,6 +21,7 @@ if (!empty($_POST)) {
         $pdo->query("INSERT INTO products (Pname, Price, Vid) VALUES ('$name',$price,$Uid);");
 
     break;
+    //Edit Prouct
     case isset($_POST['B']):
         $Pid = $_POST['id'];
         $Pname = $_POST['name'];
@@ -31,6 +32,24 @@ if (!empty($_POST)) {
             echo "<script type='text/javascript'>alert('Product edited successful!');</script>";
         } else {
             echo "<script type='text/javascript'>alert('Product cannot be edited at current status');</script>";
+        }
+    break;
+    //Buy Product
+    case isset($_POST['C']):
+        $Pid = $_POST['id'];
+        $Status = $_POST['status'];
+        if ($Status != 'Available'){
+            echo "<script type='text/javascript'>alert('Product cannot be Purchased at current status');</script>";
+        } else {
+            //Transaction
+            $Status = "Pending";
+            $pdo->query("INSERT INTO orders VALUES ($Pid, $Uid, '$Status');");
+            for ($time = 30; $time < 0; $time--){
+                // echo "<h1>$time</h1>";
+                sleep(10);
+            }
+            // sleep(10);
+            $pdo->query("DELETE FROM orders WHERE Pid = $Pid;");
         }
     }
 }
@@ -46,99 +65,21 @@ if (!empty($_POST)) {
 </head>
 <body>
     <div class="container-fluid bg-success text-light p-2">
-        <h1>Welcome <?php echo $_SESSION['name'] ?></h1>
+        <div class="row">
+            <h1 class="col-auto">Welcome <?php echo $_SESSION['name'] ?></h1>
+            <div class="col-auto">
+                <a href='/login.php' class="btn btn-light">Log Out</a>
+            </div>
+        </div>
     </div>
     <?php
-    //If user is vendor: display add product form
+    //Vendor
     if ($_SESSION['role'] == 2){
-        echo <<<GFG
-        <div class="container-fluid bg-primary text-light p-2">
-            <h1>Add product</h1>
-        </div>
-        <form method="post" action="main.php">
-            <div class="container-fluid p-2">
-            <div class="row gx-5">
-                <div class="col-1">
-                <label for="Name" class="form-label">Name:</label>
-                </div>
-                <div class="col-3 pb-3">
-                <input type="text" class="form-control" placeholder="Ex: Iphone, TV, Car ,etc." name="name" required>
-                </div>
-            </div>
-            <div class="row gx-5">
-                <div class="col-1">
-                <label for="Price" class="form-label">Price:</label>
-                </div>
-                <div class="col-3 pb-3">
-                <input type="text" class="form-control" placeholder="Ex: 50.5, 99.9, etc." name="price" required>
-                </div>
-            </div>
-            <div class="row gx-5">
-                <div class = "col-1">
-                <input type="submit" name="A" value="Add Product" class="btn btn-primary">
-                </div>
-            </div>
-            </div>   
-        </form>
-        <hr>
-        GFG;
-
-        //Display vendor's product
-        echo <<<GFG
-        <div class="container-fluid bg-primary text-light p-2">
-        <h1>List of Products</h1>
-        </div>
-        <table class="table table-striped table-info">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        GFG;
-        //Get product's information
-        $rows = $pdo->query("SELECT * FROM products WHERE Vid = $Uid;");
-        foreach ($rows as $row) {
-            //Get product's status
-            $id = $row['Pid'];
-            $status = 'Available';
-            $rows2 = $pdo->query("SELECT * FROM orders WHERE Pid = $id;");
-            foreach ($rows2 as $row2) {
-                if ($row2['Pid'] == $id){
-                    $status = $row2['Pstatus'];
-                }
-            }
-            $Pname = $row['Pname'];
-            $price = $row['Price'];
-            echo<<<GFG
-                    <tr>
-                    <form method="post" action="main.php">
-                        <td>
-                            $id
-                            <input type="hidden" name="id" value=$id>
-                        </td>
-                        <td>
-                            $Pname
-                            <input type="text" placeholder="Change name" name="name" required>
-                        </td>
-                        <td>
-                            $price
-                            <input type="number" placeholder="Change price" name="price" required>
-                        </td>
-                        <td>
-                            $status
-                            <input type="hidden" name="status" value=$status>
-                        </td>
-                        <td><input type="submit" name="B" class="btn btn-success" value="Edit"></td>
-                    </form>
-                    </tr>
-            GFG;
-        }
-        echo "</tbody></table>";
+        require('vendor.php');
+    }
+    //Customer
+    if ($_SESSION['role'] == 1){
+        require('customer.php');
     }
     ?>
 </body>
