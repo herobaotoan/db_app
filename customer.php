@@ -1,9 +1,25 @@
 <?php
-//Display All Products
-echo <<<GFG
+?>
 <div class="container-fluid bg-primary text-light p-2">
-<h1>List of Products</h1>
+    <h1>List of Products</h1>
 </div>
+<div class="row m-2">
+    <div class="col-auto">
+    <form method="post" action="main.php">
+    <select name="PageNo">
+        <option selected value="1">1</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+    </select>
+    <input type="submit" class="btn btn-sm btn-primary" name="load" value="Page">
+    </form>
+</div>
+</div>
+
+
+<!-- Display All Products -->
+
 <table class="table table-striped table-info">
 <thead>
     <tr>
@@ -12,11 +28,13 @@ echo <<<GFG
         <th>Price</th>
         <th>Status</th>
         <th></th>
+        <th>Extra info</th>
     </tr>
 </thead>
 <tbody>
-GFG;
-$rows = $pdo->query("SELECT * FROM products ORDER BY Pid DESC;");
+
+<?php
+$rows = $pdo->query("SELECT * FROM products ORDER BY Pid DESC LIMIT $PageNo;");
 //Descending order is to display *Most recently* added products first
     foreach ($rows as $row) {
         //Get product's status
@@ -45,8 +63,23 @@ $rows = $pdo->query("SELECT * FROM products ORDER BY Pid DESC;");
                 </td>
                 <td><input type="submit" name="C" class="btn btn-success" value="Buy"></td>
             </form>
-            </tr>
     GFG;
+    $document = $collection->find()->toArray();
+    for ($i = 0; $i < count($document); $i++){
+        if ($document[$i]['Pid'] == $id){
+            $newly_added = false;
+            $count = 0;
+            foreach($document[$i] as $key => $value)
+            {
+                if ($count > 1){ //Skip the first 2 keys and values (which is _id an Pid)
+                    echo<<<GFG
+                    <td>$key: $value</td>
+                    GFG;
+                } $count++;
+            }
+        }
+    }
+    echo "</tr>";
 }
 echo "</tbody></table>";
 
