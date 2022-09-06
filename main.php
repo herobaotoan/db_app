@@ -1,6 +1,7 @@
 <?php
 //Go to login page if not logged-in
 session_start();
+$PageNo = 50;//Default number of products display for customer
 if (!$_SESSION['loggedin']){
     header('location: login.php');
 }
@@ -8,6 +9,10 @@ $Uid = $_SESSION['id'];
 
 global $pdo;
 $pdo = new PDO('mysql:host=localhost;dbname=lazada', $_SESSION['username'], $_SESSION['pwd']);
+
+require 'vendor/autoload.php';
+$client = new MongoDB\Client("mongodb://localhost:27017");
+$collection = $client->lazada->products;
 // echo $_SESSION['id'];
 // echo $_SESSION['pwd'] . '-';
 // echo $_SESSION['name'];
@@ -34,6 +39,36 @@ if (!empty($_POST)) {
             echo "<script type='text/javascript'>alert('Product cannot be edited at current status');</script>";
         }
     break;
+    case isset($_POST['Delete_info']):
+        if ($_POST['status'] != 'Available'){
+            echo "<script type='text/javascript'>alert('Product cannot be edited at current status');</script>";
+        } else {
+            $collection->updateOne(
+                [$_POST['key']=>$_POST['value']],
+                ['$unset'=> [
+                    $_POST['key'] => null
+                ]]
+            );
+        }
+    break;
+    case isset($_POST['Add_info']):
+        if ($_POST['status'] != 'Available'){
+            echo "<script type='text/javascript'>alert('Product cannot be edited at current status');</script>";
+        } else {
+            if (!$_POST['newly_added']){
+                $collection->updateOne(
+                    ['Pid'=>(int)$_POST['id']],
+                    ['$set'=> [
+                        $_POST['key'] => $_POST['value']
+                    ]]
+                );
+            } else {
+                $collection->insertOne(
+                    ['Pid' => (int)$_POST['id'], $_POST['key'] => $_POST['value']]
+                );
+            }
+        }
+    break;
     //Buy Product
     case isset($_POST['C']):
         $Pid = $_POST['id'];
@@ -41,16 +76,12 @@ if (!empty($_POST)) {
         if ($Status != 'Available'){
             echo "<script type='text/javascript'>alert('Product cannot be Purchased at current status');</script>";
         } else {
-            //Transaction
-            $Status = "Pending";
+            $Status = "Ordered";
             $pdo->query("INSERT INTO orders VALUES ($Pid, $Uid, '$Status');");
-            for ($time = 30; $time < 0; $time--){
-                // echo "<h1>$time</h1>";
-                sleep(10);
-            }
-            // sleep(10);
-            $pdo->query("DELETE FROM orders WHERE Pid = $Pid;");
         }
+    break;
+    case isset($_POST['load']):
+        $PageNo = $_POST['PageNo'];
     }
 }
 
