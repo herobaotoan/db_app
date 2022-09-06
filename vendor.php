@@ -1,6 +1,6 @@
 <?php
-//Add Product form
-echo <<<GFG
+?>
+<!-- Add Product form -->
 <div class="container-fluid bg-primary text-light p-2">
     <h1>Add product</h1>
 </div>
@@ -23,19 +23,20 @@ echo <<<GFG
         </div>
     </div>
     <div class="row gx-5">
-        <div class = "col-1">
-        <input type="submit" name="A" value="Add Product" class="btn btn-primary">
+        <div class = "col-auto">
+        <input type="submit" name="A" value="Add Product" class="btn btn-sm btn-primary">
+        <span class="form-text">You can add extra information later</span>
         </div>
     </div>
     </div>   
 </form>
 <hr>
-GFG;
+<!-- GFG; -->
 
-//Display vendor's product
-echo <<<GFG
+
+<!-- Display vendor's product -->
 <div class="container-fluid bg-primary text-light p-2">
-<h1>List of Products</h1>
+    <h1>List of Products</h1>
 </div>
 <table class="table table-striped table-info">
 <thead>
@@ -45,10 +46,11 @@ echo <<<GFG
         <th>Price</th>
         <th>Status</th>
         <th></th>
+        <th>Extra info</th>
     </tr>
 </thead>
 <tbody>
-GFG;
+<?php
 //Get product's information
 $rows = $pdo->query("SELECT * FROM products WHERE Vid = $Uid;");
 foreach ($rows as $row) {
@@ -72,20 +74,58 @@ foreach ($rows as $row) {
                 </td>
                 <td>
                     $Pname
-                    <input type="text" placeholder="Change name" name="name" required>
+                    <input type="text" style="width: 40%" placeholder="Name" name="name" required>
                 </td>
                 <td>
                     $price
-                    <input type="number" placeholder="Change price" name="price" required>
+                    <input type="number" style="width: 50%" placeholder="Price" name="price" required>
                 </td>
                 <td>
                     $status
                     <input type="hidden" name="status" value=$status>
                 </td>
-                <td><input type="submit" name="B" class="btn btn-success" value="Edit"></td>
+                <td><input type="submit" name="B" class="btn btn-sm btn-success" value="Edit"></td>
             </form>
-            </tr>
+    
+    GFG;
+    $newly_added = true; //To check if product is new and doesn't have any exta information yet.
+    //Get product extra information
+    $document = $collection->find()->toArray();
+    for ($i = 0; $i < count($document); $i++){
+        if ($document[$i]['Pid'] == $id){
+            $newly_added = false;
+            $count = 0;
+            foreach($document[$i] as $key => $value)
+            {
+                if ($count > 1){ //Skip the first 2 keys and values (which is _id an Pid)
+                    echo<<<GFG
+                    <td>
+                    <form method="post" action="main.php">
+                        $key: $value
+                        <input type="hidden" name="key" value=$key>
+                        <input type="hidden" name="value" value=$value>
+                        <input type="hidden" name="status" value=$status>
+                        <input type="submit" name="Delete_info" class="btn btn-sm btn-success" value="DELETE">
+                    </form>
+                    </td>
+                    GFG;
+                } $count++;
+            }
+        }
+    }
+    echo<<<GFG
+    <td>
+        <form method="post" action="main.php">
+            <input type="text" name="key" style="width: 20%" placeholder='key'required>
+            <input type="text" name="value" style="width: 20%" placeholder='value'required>
+            <input type="hidden" name="id" value=$id>
+            <input type="hidden" name="newly_added" value=$newly_added>
+            <input type="submit" name="Add_info" class="btn btn-sm btn-success" value="Add">
+        </form>
+    </td>
+    </tr>
     GFG;
 }
-echo "</tbody></table>";
 ?>
+</tbody>
+</table>
