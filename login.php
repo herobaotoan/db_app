@@ -16,6 +16,8 @@ if (!empty($_POST)) {
         $name = $_POST['name'];
         $role = (int)$_POST['role'];
         $adress = $_POST['adress'];
+        $lon = $_POST['longitude'];
+        $lad = $_POST['ladtitude'];
     
         //Check username
         $rows = $pdo->query("SELECT Username FROM users");
@@ -28,16 +30,18 @@ if (!empty($_POST)) {
         if ($invalid){
             echo "<script type='text/javascript'>alert('Username has been taken');</script>";
         } else {
-            //Create user and assign roles
-            $pdo->query("CREATE USER '$username'@'localhost' IDENTIFIED BY '$password';");
-            $pdo->query("GRANT ALL PRIVILEGES ON lazada. * TO '$username'@'localhost';");
-
             //Hash password before store in database
-            $password = password_hash($password, PASSWORD_DEFAULT);
+            $passwordHased = password_hash($password, PASSWORD_DEFAULT);
             if ($role == 3) {
-                $pdo->query("INSERT INTO users (Uname, Username, Pwd, URole) VALUES ('$name','$username','$password',$role);");
+                $pdo->query("INSERT INTO users (Uname, Username, Pwd, URole, Adress) VALUES ('$name','$username','$passwordHased',$role, '$hub');");
+                //Create user and assign roles
+                $pdo->query("CREATE USER '$username'@'localhost' IDENTIFIED BY '$password';");
+                $pdo->query("GRANT ALL PRIVILEGES ON lazada. * TO '$username'@'localhost';");
             } else {
-                $pdo->query("INSERT INTO users (Uname, Username, Pwd, URole, Adress) VALUES ('$name','$username','$password',$role,'$adress');");
+                $pdo->query("INSERT INTO users (Uname, Username, Pwd, URole, Adress, Longitude, Latitude) VALUES ('$name','$username','$passwordHased',$role,'$adress', $lon, $lad);");
+                //Create user and assign roles
+                $pdo->query("CREATE USER '$username'@'localhost' IDENTIFIED BY '$password';");
+                $pdo->query("GRANT ALL PRIVILEGES ON lazada. * TO '$username'@'localhost';");
             }
             echo "<script type='text/javascript'>alert('Registation completed!');</script>";
         }
@@ -71,6 +75,7 @@ if (!empty($_POST)) {
         } else {
             echo "<script type='text/javascript'>alert('Username or Password incorrect');</script>";
         }
+    break;
     }
 }
 ?>
@@ -117,11 +122,21 @@ if (!empty($_POST)) {
             <div class="col-1">
             <label for="Role" class="form-label">Role:</label>
             </div>
-            <div class="col-3 pb-3">
-            <select name="role" id="role">
+            <div class="col-2 pb-3">
+            <select name="role" >
                 <option value="1">Vendor</option>
                 <option value="2">Customer</option>
                 <option value="3">Shipper</option>
+            </select>
+            </div>
+            <div class="col-auto">
+            <label for="Hub" class="form-label">Hub (Shipper only):</label>
+            </div>
+            <div class="col-2 pb-3">
+            <select name="hub">
+                <option value="hub1">Hub 1</option>
+                <option value="hub2">Hub 2</option>
+                <option value="hub3">Hub 3</option>
             </select>
             </div>
         </div>
@@ -129,8 +144,24 @@ if (!empty($_POST)) {
             <div class="col-1">
             <label for="Adress" class="form-label">Adress:</label>
             </div>
-            <div class="col-3 pb-3">
+            <div class="col-4 pb-3">
             <input type="text" class="form-control" name="adress" placeholder="Leave a blank if you want to register as a Shipper">
+            </div>
+        </div>
+        <div class="row gx-5">
+            <div class="col-1">
+            <label for="Longitude" class="form-label">Longitude:</label>
+            </div>
+            <div class="col-4 pb-3">
+            <input type="number" class="form-control" name="longitude" placeholder="Leave a blank if you want to register as a Shipper">
+            </div>
+        </div>
+        <div class="row gx-5">
+            <div class="col-1">
+            <label for="Ladtitude" class="form-label">Ladtitude:</label>
+            </div>
+            <div class="col-4 pb-3">
+            <input type="number" class="form-control" name="ladtitude" placeholder="Leave a blank if you want to register as a Shipper">
             </div>
         </div>
         <div class="row gx-5">
