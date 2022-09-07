@@ -1,7 +1,14 @@
 <?php
 //Go to login page if not logged-in
 session_start();
-$PageNo = 50;//Default number of products display for customer
+//Default display query for customer
+$PageNo = 50;
+$where = "WHERE Pname LIKE '%%'";
+$and = "";
+$attributeSearch = false;
+$keySearch = '';
+$valueSearch = '';
+//
 if (!$_SESSION['loggedin']){
     header('location: login.php');
 }
@@ -80,8 +87,34 @@ if (!empty($_POST)) {
             $pdo->query("INSERT INTO orders VALUES ($Pid, $Uid, '$Status');");
         }
     break;
-    case isset($_POST['load']):
+    case isset($_POST['PageNo']):
         $PageNo = $_POST['PageNo'];
+    break;
+    case isset($_POST['search_name']):
+        $PrName = $_POST['name'];
+        $where = "WHERE Pname LIKE '%$PrName%'";
+    break;
+    case isset($_POST['search_price']):
+        $Pricelte = $_POST['price1'];
+        $Pricegte = $_POST['price2'];
+        if ($Pricegte == null && $Pricelte == null){
+            $and = "";
+        }
+        else if ($Pricelte == null){
+            $and = "AND Price >= $Pricelte";
+        } else if ($Pricegte == null) {
+            $and = "AND Price <= $Pricegte";
+        } else {
+            $and = "AND Price >= $Pricelte AND Price <= $Pricegte";
+        }
+    break;
+    case isset($_POST['search_attribute']):
+        $keySearch = $_POST['key'];
+        $valueSearch = $_POST['value'];
+        if ($keySearch == '') {
+            $attributeSearch = false;
+        } else { $attributeSearch = true; }
+    break;
     }
 }
 
