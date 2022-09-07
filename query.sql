@@ -1,3 +1,6 @@
+//To fix table users (remove after use)
+ALTER TABLE users CHANGE Latidtude Latitude DECIMAL(10);
+
 CREATE DATABASE lazada;
 
 CREATE TABLE users (
@@ -5,7 +8,7 @@ CREATE TABLE users (
 	UName VARCHAR(50) NOT NULL,
 	Adress VARCHAR(200),
 	Longitude DECIMAL,
-   	Latidtude DECIMAL,
+   	Latitude DECIMAL,
    	Username VARCHAR(50) NOT NULL,
    	Pwd VARCHAR(255) NOT NULL,
 	URole INT NOT NULL,
@@ -23,10 +26,11 @@ CREATE TABLE products (
 ) ENGINE = InnoDB;
 
 CREATE TABLE orders (
+	Oid INT NOT NULL AUTO_INCREMENT,
 	Pid INT NOT NULL,
     Cid INT NOT NULL,
     Pstatus VARCHAR (20),
-    PRIMARY KEY (Pid),
+    PRIMARY KEY (Oid),
     FOREIGN KEY (Pid) REFERENCES products(Pid),
     FOREIGN KEY (Cid) REFERENCES users(Uid)
 )Engine Innodb;
