@@ -138,11 +138,11 @@ if (!empty($_POST)) {
     </div>
     <?php
     //Vendor
-    if ($_SESSION['role'] == 2){
+    if ($_SESSION['role'] == 1){
         require('vendor.php');
     }
     //Customer
-    if ($_SESSION['role'] == 1){
+    if ($_SESSION['role'] == 2){
         require('customer.php');
     }
     ?>
