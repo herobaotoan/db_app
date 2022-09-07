@@ -26,11 +26,18 @@ CREATE TABLE products (
 ) ENGINE = InnoDB;
 
 CREATE TABLE orders (
-	Oid INT NOT NULL AUTO_INCREMENT,
 	Pid INT NOT NULL,
-    Cid INT NOT NULL,
-    Pstatus VARCHAR (20),
-    PRIMARY KEY (Oid),
-    FOREIGN KEY (Pid) REFERENCES products(Pid),
-    FOREIGN KEY (Cid) REFERENCES users(Uid)
+	Cid INT NOT NULL,
+	Hid INT,
+	Pstatus VARCHAR (20),
+	FOREIGN KEY (Pid) REFERENCES products(Pid),
+	FOREIGN KEY (Cid) REFERENCES users(Uid),
+	FOREIGN KEY (Hid) REFERENCES hubs(Hid)
 )Engine Innodb;
+
+CREATE TABLE hubs (
+	Hid INT NOT NULL,
+    Longitude DECIMAL(10),
+    Latitude DECIMAL(10),
+    PRIMARY KEY (Hid)
+) ENGINE InnoDB;
