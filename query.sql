@@ -1,6 +1,3 @@
-//To fix table users (remove after use)
-ALTER TABLE users CHANGE Latidtude Latitude DECIMAL(10);
-
 CREATE DATABASE lazada;
 
 CREATE TABLE users (
