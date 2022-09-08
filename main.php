@@ -8,6 +8,7 @@ $and = "";
 $attributeSearch = false;
 $keySearch = '';
 $valueSearch = '';
+$distanceSearch = 9999999999;
 //
 if (!$_SESSION['loggedin']){
     header('location: login.php');
@@ -25,6 +26,8 @@ $collection = $client->lazada->products;
 // echo $_SESSION['name'];
 if (!empty($_POST)) {
     switch ($_POST) {
+
+    //Vendor's page
     //Add Product
     case isset($_POST['A']):
         $name = $_POST['name'];
@@ -76,15 +79,18 @@ if (!empty($_POST)) {
             }
         }
     break;
-    //Buy Product
-    case isset($_POST['C']):
+
+    //Costumer's page
+    case isset($_POST['Buy_product']):
         $Pid = $_POST['id'];
         $Status = $_POST['status'];
+        $HubID = $_POST['hubNo'];
         if ($Status != 'Available'){
             echo "<script type='text/javascript'>alert('Product cannot be Purchased at current status');</script>";
         } else {
             $Status = "Ordered";
-            $pdo->query("INSERT INTO orders VALUES ($Pid, $Uid, '$Status');");
+            $pdo->query("INSERT INTO orders VALUES ($Pid, $Uid, $HubID, '$Status');");
+            echo "<script type='text/javascript'>alert('Order Successful! Thank you!');</script>";
         }
     break;
     case isset($_POST['PageNo']):
@@ -101,9 +107,9 @@ if (!empty($_POST)) {
             $and = "";
         }
         else if ($Pricelte == null){
-            $and = "AND Price >= $Pricelte";
-        } else if ($Pricegte == null) {
             $and = "AND Price <= $Pricegte";
+        } else if ($Pricegte == null) {
+            $and = "AND Price >= $Pricelte";
         } else {
             $and = "AND Price >= $Pricelte AND Price <= $Pricegte";
         }
@@ -114,6 +120,24 @@ if (!empty($_POST)) {
         if ($keySearch == '') {
             $attributeSearch = false;
         } else { $attributeSearch = true; }
+    break;
+    case isset($_POST['search_distance']):
+        if ($_POST['distance'] == null){
+            $distanceSearch = 9999999999;
+        } else {$distanceSearch = (int)$_POST['distance'];}
+    break;
+
+    //Shipper's page
+    case isset($_POST['change_hub']):
+        $NewHub = $_POST['hub'];
+        $pdo->query("UPDATE users SET Adress = '$NewHub' WHERE Uid = $Uid;");
+    break;
+    case isset($_POST['change_status']):
+        $Product_status = $_POST['change_status'];
+        if ($Product_status == 'Ship') {$Product_status = 'Shipped';}
+        if ($Product_status == 'Cancel') {$Product_status = 'Canceled';}
+        $Pid = $_POST['Pid'];
+        $pdo->query("UPDATE orders SET Pstatus = '$Product_status' WHERE Pid = $Pid;");
     break;
     }
 }
@@ -144,6 +168,10 @@ if (!empty($_POST)) {
     //Customer
     if ($_SESSION['role'] == 2){
         require('customer.php');
+    }
+    //Shipper
+    if ($_SESSION['role'] == 3){
+        require('shipper.php');
     }
     ?>
 </body>
