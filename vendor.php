@@ -118,6 +118,7 @@ foreach ($rows as $row) {
         <form method="post" action="main.php">
             <input type="text" name="key" style="width: 20%" placeholder='key'required>
             <input type="text" name="value" style="width: 20%" placeholder='value'required>
+            <input type="hidden" name="status" value=$status>
             <input type="hidden" name="id" value=$id>
             <input type="hidden" name="newly_added" value=$newly_added>
             <input type="submit" name="Add_info" class="btn btn-sm btn-success" value="Add">
