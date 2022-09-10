@@ -6,7 +6,7 @@
 <div class="row m-2">
     <div class="col-auto">
         <form method="post" action="main.php">
-        <select name="PageNo">
+        <select name="ProductNo">
             <option selected value="1">1</option>
             <option value="5">5</option>
             <option value="10">10</option>
