@@ -1,4 +1,5 @@
 <?php
+//Go to login page if not logged-in
 session_start();
 //Default display query for customer
 $PageNo = 50;
@@ -9,7 +10,6 @@ $keySearch = '';
 $valueSearch = '';
 $distanceSearch = 9999999999;
 //
-//Go to login page if not logged-in
 if (!$_SESSION['loggedin']){
     header('location: login.php');
 }
@@ -49,7 +49,6 @@ if (!empty($_POST)) {
             echo "<script type='text/javascript'>alert('Product cannot be edited at current status');</script>";
         }
     break;
-    //Delete Info
     case isset($_POST['Delete_info']):
         if ($_POST['status'] != 'Available'){
             echo "<script type='text/javascript'>alert('Product cannot be edited at current status');</script>";
@@ -62,7 +61,6 @@ if (!empty($_POST)) {
             );
         }
     break;
-    //Add info
     case isset($_POST['Add_info']):
         if ($_POST['status'] != 'Available'){
             echo "<script type='text/javascript'>alert('Product cannot be edited at current status');</script>";
@@ -96,7 +94,7 @@ if (!empty($_POST)) {
         }
     break;
     case isset($_POST['PageNo']):
-        $PageNo = $_POST['PageNo'];
+        $PageNo = (int)$_POST['ProductNo'];
     break;
     case isset($_POST['search_name']):
         $PrName = $_POST['name'];
