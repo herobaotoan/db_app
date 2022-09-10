@@ -18,6 +18,7 @@ if (!empty($_POST)) {
         $adress = $_POST['adress'];
         $lon = $_POST['longitude'];
         $lad = $_POST['ladtitude'];
+        $hub = $_POST['hub'];
     
         //Check username
         $rows = $pdo->query("SELECT Username FROM users");
@@ -46,6 +47,7 @@ if (!empty($_POST)) {
             echo "<script type='text/javascript'>alert('Registation completed!');</script>";
         }
     break;
+    //Login
     case isset($_POST['B']):
         $password = $_POST['password'];
         $username = strtolower($_POST['username']);
